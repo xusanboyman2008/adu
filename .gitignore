@@ -1,0 +1,27 @@
+chromedriver.exe
+artifacts/
+queue_seed.csv
+learned_weights.json
+
+# Playwright browser binaries (installed at build time on Render)
+# Uncomment the line below if you want to avoid committing local binaries
+# .playwright/
+
+# Node
+node_modules/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+run_auto.log
+
+# Swap files
+*.swp
+*.swo
+
+# Sensitive data — never commit these
+# students.csv        ← upload to Render Disk or set COORDINATOR_URL instead
+# names.xlsx          ← same

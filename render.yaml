@@ -1,0 +1,66 @@
+# render.yaml — Render.com deployment configuration
+# Deploy this repo as a "Web Service" on https://render.com
+#
+# The service:
+#   • npm install  → auto-runs scripts/postinstall.js which installs Playwright Chromium
+#   • npm start    → launches server.js (keep-alive HTTP on $PORT) + spawns the headless worker
+#
+# Set COORDINATOR_URL (and optionally PC_ID, SPEED, VPN, etc.) in the
+# Render dashboard under Environment → Environment Variables.
+
+services:
+  - type: web
+    name: coursera-runner
+    runtime: node
+    region: oregon   # change to your preferred region
+    plan: free       # upgrade to "starter" or above for always-on (no spin-down)
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+
+    # ── Environment variables ─────────────────────────────────────────────────
+    # These are the defaults baked into the YAML.
+    # Override sensitive values (COORDINATOR_URL, PC_ID) in the Render dashboard
+    # so they are NOT committed to git.
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      # Playwright must run headless on a server (no display)
+      - key: HEADLESS
+        value: "y"
+
+      # Run in fully-automated mode
+      - key: MODE
+        value: auto
+
+      # Playwright skip browser-download on every start
+      # (browsers are already installed during build by postinstall.js)
+      - key: PLAYWRIGHT_BROWSERS_PATH
+        value: /opt/render/project/.playwright
+
+      # Coordinator URL — OVERRIDE THIS IN RENDER DASHBOARD (keep it secret)
+      - key: COORDINATOR_URL
+        value: ""   # paste your Google Apps Script exec URL here
+
+      # Optional: a friendly name for this Render instance in the dashboard
+      - key: PC_ID
+        value: render-1
+
+      # Timeout multiplier (1 = normal, 2 = 2× slower actions; useful for slow VPN/proxy)
+      - key: SPEED
+        value: "1"
+
+      # VPN (Browsec extension) — keep "n" on Render (no extension path available)
+      - key: VPN
+        value: "n"
+
+      # Number of parallel browser sessions per process (keep 1 on free tier)
+      - key: CONCURRENCY
+        value: "1"
+
+      # Certificate polling — increase if Coursera is slow to issue certificates
+      - key: CERT_ATTEMPTS
+        value: "12"
+      - key: CERT_WAIT_MS
+        value: "15000"
