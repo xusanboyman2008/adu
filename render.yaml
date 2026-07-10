@@ -1,52 +1,66 @@
 # render.yaml — Render.com deployment configuration
-# Deploy as a "Web Service" on https://render.com
+# Deploy this repo as a "Web Service" on https://render.com
+#
+# The service:
+#   • buildCommand: npm install (postinstall.js runs) + npx playwright install chromium
+#   • npm start    → launches server.js (keep-alive HTTP on $PORT) + spawns the headless worker
+#
+# Set COORDINATOR_URL (and optionally PC_ID, SPEED, VPN, etc.) in the
+# Render dashboard under Environment → Environment Variables.
 
 services:
   - type: web
     name: coursera-runner
     runtime: node
-    region: oregon
-    plan: free
-    buildCommand: bash build.sh
+    region: oregon   # change to your preferred region
+    plan: free       # upgrade to "starter" or above for always-on (no spin-down)
+    buildCommand: npm install && npx playwright install
     startCommand: npm start
     healthCheckPath: /health
 
+    # ── Environment variables ─────────────────────────────────────────────────
+    # These are the defaults baked into the YAML.
+    # Override sensitive values (COORDINATOR_URL, PC_ID) in the Render dashboard
+    # so they are NOT committed to git.
     envVars:
       - key: NODE_ENV
         value: production
 
-      # Headless — no display on a server
+      # Playwright must run headless on a server (no display)
       - key: HEADLESS
         value: "y"
 
-      # Fully-automated mode
+      # Run in fully-automated mode
       - key: MODE
         value: auto
 
-      # ── CRITICAL: must match what build.sh sets during build ──────────────
-      # Render uploads only /opt/render/project/src/; ~/.cache is discarded.
-      # Browsers must live inside the project dir to survive build→runtime.
-      - key: PLAYWRIGHT_BROWSERS_PATH
-        value: /opt/render/project/src/pw-browsers
+      # PLAYWRIGHT_BROWSERS_PATH is intentionally NOT set here.
+      # Playwright uses its default cache (~/.cache/ms-playwright) consistently
+      # for both the build step and runtime — setting a custom path caused
+      # "Executable doesn't exist" because build and runtime used different paths.
 
-      # Coordinator — default from config.json
+      # Coordinator URL — default from config.json (already works out of the box)
       - key: COORDINATOR_URL
         value: "https://script.google.com/macros/s/AKfycbzl3TijKis8trT9-_K8EMDwEj6a0tm7itxcV9w8nlZPO0PkaHo1lc2JGQCrHLlCO8WuEQ/exec"
 
+      # Optional: a friendly name for this Render instance in the dashboard
       - key: PC_ID
         value: render-1
 
+      # Timeout multiplier (1 = normal, 2 = 2× slower actions; useful for slow VPN/proxy)
       - key: SPEED
         value: "1"
 
+      # VPN (Browsec extension) — keep "n" on Render (no extension path available)
       - key: VPN
         value: "n"
 
+      # Number of parallel browser sessions per process (keep 1 on free tier)
       - key: CONCURRENCY
         value: "1"
 
+      # Certificate polling — increase if Coursera is slow to issue certificates
       - key: CERT_ATTEMPTS
         value: "12"
-
       - key: CERT_WAIT_MS
         value: "15000"
