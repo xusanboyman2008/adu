@@ -3,6 +3,9 @@ artifacts/
 queue_seed.csv
 learned_weights.json
 
+# Playwright browser binaries — installed during build, never committed
+pw-browsers/
+
 # Playwright browser binaries (installed at build time on Render)
 # Uncomment the line below if you want to avoid committing local binaries
 # .playwright/
