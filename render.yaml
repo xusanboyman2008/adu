@@ -39,9 +39,9 @@ services:
       - key: PLAYWRIGHT_BROWSERS_PATH
         value: /opt/render/project/.playwright
 
-      # Coordinator URL — OVERRIDE THIS IN RENDER DASHBOARD (keep it secret)
+      # Coordinator URL — default from config.json (already works out of the box)
       - key: COORDINATOR_URL
-        value: ""   # paste your Google Apps Script exec URL here
+        value: "https://script.google.com/macros/s/AKfycbzl3TijKis8trT9-_K8EMDwEj6a0tm7itxcV9w8nlZPO0PkaHo1lc2JGQCrHLlCO8WuEQ/exec"
 
       # Optional: a friendly name for this Render instance in the dashboard
       - key: PC_ID
