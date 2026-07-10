@@ -1,0 +1,12 @@
+node_modules
+pw-browsers
+artifacts
+*.log
+run_auto.log
+learned_weights.json
+queue_seed.csv
+.git
+.gitignore
+*.swp
+*.swo
+__pycache__

@@ -1,12 +1,12 @@
-# render.yaml — Render.com deployment configuration
+# render.yaml — Render.com deployment (Docker)
+# Uses the official Playwright Docker image so browsers are baked into
+# the container image — no build-vs-runtime filesystem issues.
 
 services:
   - type: web
     name: coursera-runner
-    runtime: node
+    runtime: docker
     plan: free
-    buildCommand: bash build.sh
-    startCommand: npm start
     healthCheckPath: /health
 
     envVars:
@@ -18,12 +18,6 @@ services:
 
       - key: MODE
         value: auto
-
-      # MUST match the path set inside build.sh
-      # Render uploads /opt/render/project/src/ but NOT ~/.cache
-      # so browsers must live inside the project dir
-      - key: PLAYWRIGHT_BROWSERS_PATH
-        value: /opt/render/project/src/pw-browsers
 
       - key: COORDINATOR_URL
         value: "https://script.google.com/macros/s/AKfycbzl3TijKis8trT9-_K8EMDwEj6a0tm7itxcV9w8nlZPO0PkaHo1lc2JGQCrHLlCO8WuEQ/exec"
